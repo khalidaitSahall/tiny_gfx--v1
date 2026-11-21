@@ -187,14 +187,97 @@ void DrawRectLines(int x, int y, int w, int h, Color color) {
         DrawPixel(x + w - 1, y + j, color);
     }
 }
+namespace {
+const uint8_t* GetGlyph5x7(char c) {
+    static const uint8_t space[7] = {0,0,0,0,0,0,0};
+    static const uint8_t colon[7] = {0,4,4,0,4,4,0};
+    static const uint8_t dash[7]  = {0,0,0,14,0,0,0};
+    static const uint8_t plus[7]  = {0,4,4,31,4,4,0};
+    static const uint8_t dot[7]   = {0,0,0,0,0,4,0};
+    static const uint8_t slash[7] = {1,2,4,4,8,16,0};
+    static const uint8_t lparen[7]= {2,4,8,8,8,4,2};
+    static const uint8_t rparen[7]= {8,4,2,2,2,4,8};
+    static const uint8_t lt[7]    = {2,4,8,16,8,4,2};
+    static const uint8_t gt[7]    = {16,8,4,2,4,8,16};
+    static const uint8_t eq[7]    = {0,0,31,0,31,0,0};
+    static const uint8_t under[7] = {0,0,0,0,0,0,31};
+
+    static const uint8_t digits[10][7] = {
+        {14,17,19,21,25,17,14}, // 0
+        {4,12,4,4,4,4,14},     // 1
+        {14,17,1,6,8,16,31},    // 2
+        {30,1,1,14,1,1,30},     // 3
+        {2,6,10,18,31,2,2},     // 4
+        {31,16,30,1,1,17,14},   // 5
+        {14,16,30,17,17,17,14}, // 6
+        {31,1,2,4,8,8,8},       // 7
+        {14,17,17,14,17,17,14}, // 8
+        {14,17,17,15,1,1,14}    // 9
+    };
+
+    static const uint8_t alpha[26][7] = {
+        {14,17,17,31,17,17,17}, // A
+        {30,17,17,30,17,17,30}, // B
+        {14,17,16,16,16,17,14}, // C
+        {28,18,17,17,17,18,28}, // D
+        {31,16,16,30,16,16,31}, // E
+        {31,16,16,30,16,16,16}, // F
+        {14,17,16,23,17,17,15}, // G
+        {17,17,17,31,17,17,17}, // H
+        {14,4,4,4,4,4,14},      // I
+        {7,2,2,2,2,18,12},      // J
+        {17,18,20,24,20,18,17}, // K
+        {16,16,16,16,16,16,31}, // L
+        {17,27,21,21,17,17,17}, // M
+        {17,25,21,19,17,17,17}, // N
+        {14,17,17,17,17,17,14}, // O
+        {30,17,17,30,16,16,16}, // P
+        {14,17,17,17,21,18,13}, // Q
+        {30,17,17,30,20,18,17}, // R
+        {15,16,16,14,1,1,30},   // S
+        {31,4,4,4,4,4,4},       // T
+        {17,17,17,17,17,17,14}, // U
+        {17,17,17,17,17,10,4},  // V
+        {17,17,17,21,21,27,17}, // W
+        {17,17,10,4,10,17,17},  // X
+        {17,17,10,4,4,4,4},     // Y
+        {31,1,2,4,8,16,31}      // Z
+    };
+
+    if (c >= '0' && c <= '9') return digits[c - '0'];
+    if (c >= 'a' && c <= 'z') return alpha[c - 'a'];
+    if (c >= 'A' && c <= 'Z') return alpha[c - 'A'];
+    switch (c) {
+        case ':': return colon;
+        case '-': return dash;
+        case '+': return plus;
+        case '.': return dot;
+        case '/': return slash;
+        case '(': return lparen;
+        case ')': return rparen;
+        case '<': return lt;
+        case '>': return gt;
+        case '=': return eq;
+        case '_': return under;
+        default:  return space;
+    }
+}
+} // namespace
 
 void DrawTextSimple(int x, int y, const std::string& text, Color color) {
-    if (!g_hwnd) return;
-    HDC hdc = GetDC(g_hwnd);
-    SetBkMode(hdc, TRANSPARENT);
-    SetTextColor(hdc, RGB(color.r, color.g, color.b));
-    TextOutA(hdc, x, y, text.c_str(), static_cast<int>(text.size()));
-    ReleaseDC(g_hwnd, hdc);
+    const int scale = 2;
+    int cursor_x = x;
+    for (char ch : text) {
+        const uint8_t* glyph = GetGlyph5x7(ch);
+        for (int row = 0; row < 7; ++row) {
+            for (int col = 0; col < 5; ++col) {
+                if (glyph[row] & (1 << (4 - col))) {
+                    DrawRect(cursor_x + col * scale, y + row * scale, scale, scale, color);
+                }
+            }
+        }
+        cursor_x += 6 * scale;
+    }
 }
 
 int GetMouseX() { return g_mouse_x; }
