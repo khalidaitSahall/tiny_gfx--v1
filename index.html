@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TinyGFX — 16×16 Block &amp; 256-Color Tileset Editor</title>
+  <style>
+    :root {
+      --bg: #0f141c;
+      --card: #161e2a;
+      --card-2: #1c2635;
+      --text: #e6edf3;
+      --muted: #9fb0c3;
+      --accent: #58a6ff;
+      --green: #3fb950;
+      --border: #2a374a;
+      --code-bg: #0b0f16;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Naskh Arabic", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 36px auto;
+      padding: 0 20px 60px;
+    }
+
+    header {
+      background: linear-gradient(135deg, #162233, #111824);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: 1.9rem;
+      color: #ffffff;
+    }
+
+    .badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 14px 0 18px;
+    }
+
+    .badge {
+      background: var(--card-2);
+      border: 1px solid var(--border);
+      color: var(--accent);
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .badge.green { color: var(--green); }
+
+    section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 22px 24px;
+      margin-bottom: 20px;
+    }
+
+    h2 {
+      margin: 0 0 14px;
+      font-size: 1.3rem;
+      color: var(--accent);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+    }
+
+    ul {
+      margin: 8px 0;
+      padding-right: 20px;
+    }
+
+    li { margin-bottom: 8px; }
+
+    pre, code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      direction: ltr;
+      text-align: left;
+    }
+
+    code {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-size: 0.9em;
+      color: #79c0ff;
+    }
+
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 16px;
+      overflow-x: auto;
+      margin: 10px 0 16px;
+      color: #d2e3f5;
+      font-size: 0.9rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      font-size: 0.95rem;
+    }
+
+    th, td {
+      border: 1px solid var(--border);
+      padding: 10px 12px;
+      text-align: right;
+    }
+
+    th {
+      background: var(--card-2);
+      color: #ffffff;
+    }
+
+    .en-note {
+      color: var(--muted);
+      font-size: 0.95rem;
+      direction: ltr;
+      text-align: left;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>TinyGFX — محرر البلوكات (16×16) ولوحة 256 لوناً</h1>
+      <p>
+        محرر رسومي وخفيف مبني من الصفر بلغة <strong>C++17 بدون أي مكتبات خارجية</strong> لتحرير البلوكات
+        (<code>16×16</code>) ضمن شبكة (<code>16×16</code>) ولوحة ألوان (<code>256</code> لوناً)، مع رسم مباشر في
+        الـ Framebuffer، وخط نقطي <code>5×7</code> مدمج بدون وميض، وتحكم بالماوس والأوامر النصية، وتصدير
+        الصور بصيغتي <code>BMP</code> و <code>PPM</code>.
+      </p>
+      <div class="badges">
+        <span class="badge">C++17</span>
+        <span class="badge green">Zero External Dependencies</span>
+        <span class="badge">Windows (Win32 + GDI) | Linux (X11)</span>
+      </div>
+      <p class="en-note">
+        Lightweight zero-dependency C++17 16×16 block &amp; 256-color tileset editor with direct 32-bit
+        framebuffer rendering, flicker-free 5×7 bitmap font, mouse &amp; command input, and BMP/PPM export.
+      </p>
+    </header>
+
+    <section>
+      <h2>المزايا الرئيسية | Key Features</h2>
+      <ul>
+        <li><strong>بدون مكتبات خارجية:</strong> كود C++17 مباشر يستدعي واجهة النظام (<code>Win32 API + GDI</code> على Windows و<code>X11</code> على Linux).</li>
+        <li><strong>واجهة بدون وميض وخط 5×7:</strong> تُرسم عناصر الواجهة والأوامر وحالة الحفظ ودليل الأوامر داخل الـ Framebuffer قبل عرض الإطار.</li>
+        <li><strong>بلوكات 16×16 ولوحة 256 لوناً:</strong> <code>1,000</code> بلوك بقياس <code>16×16</code> مرتبطة بلوحة ألوان من <code>256</code> لوناً.</li>
+        <li><strong>ماوس + أوامر سريعة:</strong> الرسم والمسح بالماوس، وتبديل البلوكات بالعجلة، وتنفيذ أوامر مختصرة عبر الكيبورد.</li>
+        <li><strong>تصدير الصور:</strong> حفظ الصور بصيغة <code>BMP</code> (الافتراضي <code>output.bmp</code>) و<code>PPM</code> (الافتراضي <code>output.ppm</code>).</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>هيكل المشروع | Project Structure</h2>
+      <pre>project/
+├── tiny_gfx.hpp          # الواجهة الموحدة متعددة المنصات | Cross-platform API
+├── platform_win32.cpp    # تنفيذ Windows (Win32 + StretchDIBits + خط 5x7)
+├── platform_x11.cpp      # تنفيذ Linux (X11 + XPutImage)
+├── ext_tileset.hpp       # منطق البلوكات 16x16 ولوحة الـ 256 لوناً
+├── main.cpp              # حلقة المحرر، الأوامر، الشرح، وتصدير BMP/PPM
+└── README.html           # صفحة التوثيق</pre>
+    </section>
+
+    <section>
+      <h2>الترجمة والتشغيل | Build &amp; Run</h2>
+      <p><strong>Windows (MinGW / g++):</strong></p>
+      <pre>g++ -O2 -std=c++17 main.cpp platform_win32.cpp -lgdi32 -o editor.exe
+.\editor.exe</pre>
+
+      <p><strong>Linux (g++ + X11):</strong></p>
+      <pre>g++ -O2 -std=c++17 main.cpp platform_x11.cpp -lX11 -o editor
+./editor</pre>
+    </section>
+
+    <section>
+      <h2>التحكم والأوامر | Controls &amp; Commands</h2>
+      <ul>
+        <li><strong>الزر الأيسر للماوس:</strong> تلوين الخانة بالبلوك النشط.</li>
+        <li><strong>الزر الأيمن للماوس:</strong> تفريغ الخانة وإعادتها إلى <code>0</code>.</li>
+        <li><strong>عجلة الماوس (Scroll):</strong> التنقل بين أرقام البلوكات النشطة.</li>
+      </ul>
+
+      <table>
+        <thead>
+          <tr>
+            <th>الأمر الكامل</th>
+            <th>الاختصار</th>
+            <th>الوظيفة | Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><code>brush &lt;id&gt;</code></td><td><code>b &lt;id&gt;</code></td><td>اختيار رقم البلوك النشط | Select active block ID</td></tr>
+          <tr><td><code>set &lt;x&gt; &lt;y&gt; &lt;id&gt;</code></td><td><code>s &lt;x&gt; &lt;y&gt; &lt;id&gt;</code></td><td>تعيين بلوك في الخانة (x, y) | Set cell block</td></tr>
+          <tr><td><code>fill &lt;id&gt;</code></td><td><code>f &lt;id&gt;</code></td><td>تعبئة شبكة 16×16 بالبلوك | Fill 16×16 grid</td></tr>
+          <tr><td><code>clear</code></td><td><code>x</code></td><td>مسح كامل الشبكة | Clear entire grid</td></tr>
+          <tr><td><code>paint &lt;pal&gt;</code></td><td><code>p &lt;pal&gt;</code></td><td>تلوين البلوك الحالي بلون اللوحة (0..255) | Paint palette index</td></tr>
+          <tr><td><code>rgb &lt;r&gt; &lt;g&gt; &lt;b&gt;</code></td><td><code>c &lt;r&gt; &lt;g&gt; &lt;b&gt;</code></td><td>تعديل لون RGB للبلوك النشط | Set active block RGB</td></tr>
+          <tr><td><code>bmp [file]</code></td><td><code>m [file]</code></td><td>حفظ صورة BMP (افتراضي <code>output.bmp</code>) | Export BMP</td></tr>
+          <tr><td><code>ppm [file]</code></td><td><code>i [file]</code></td><td>حفظ صورة PPM (افتراضي <code>output.ppm</code>) | Export PPM</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>قواعد الثبات وأين تضع الميزات الجديدة | Stability &amp; Extension Rules</h2>
+      <ul>
+        <li><strong>الرسم قبل <code>EndDrawing()</code>:</strong> اجعل كل النصوص واللوحات داخل <code>BeginDrawing()</code> ... <code>EndDrawing()</code> لتجنب الوميض.</li>
+        <li><strong>عدم تضمين ترويسات النظام في <code>tiny_gfx.hpp</code>:</strong> أبقِه واجهة نقية مستقلة عن Windows وX11.</li>
+        <li><strong>الحفاظ على ترتيب BMP:</strong> ارتفاع سالب في <code>BITMAPINFO</code> (<code>-height</code>)، ومحاذاة الأسطر إلى 4 بايت، وكتابة البكسلات من الأسفل للأعلى بترتيب <code>B, G, R</code>.</li>
+        <li><strong>توزيع الميزات:</strong> دوال الرسم والمدخلات في <code>tiny_gfx.hpp</code> + <code>platform_*.cpp</code>، والبلوكات والألوان في <code>ext_tileset.hpp</code>، والأوامر والملفات في <code>main.cpp</code>.</li>
+      </ul>
+    </section>
+  </div>
+</body>
+</html>
